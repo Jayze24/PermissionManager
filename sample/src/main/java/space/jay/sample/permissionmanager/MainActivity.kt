@@ -2,11 +2,14 @@ package space.jay.sample.permissionmanager
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.dialog_request_permission.view.*
+import kotlinx.android.synthetic.main.dialog_request_permission_setting.view.*
 import space.jay.permissionmanager.PermissionManager
 import space.jay.sample.permissionmanager.databinding.ActivityMainBinding
 
@@ -29,23 +32,27 @@ class MainActivity : AppCompatActivity() {
         binding.buttonPostNotificationsAndReadContacts.setOnClickListener { checkPermissionPostNotificationsAndReadContacts() }
     }
 
+    @SuppressLint("InlinedApi")
     private fun checkPermissionLocation() {
         PermissionManager.Builder(applicationContext)
             .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
             .setPermissionWithTarget(Manifest.permission.ACCESS_BACKGROUND_LOCATION, minSdk = Build.VERSION_CODES.Q)
             .setListenerShowDialogBeforeRequest { arrayDeniedPermission, startRequest ->
-                printLog("button Location", "ShowDialogBeforeRequest", arrayDeniedPermission)
-                yourCustomDialogFirstStartRequest(startRequest)
+                printLog("Location", "ShowDialogBeforeRequest", arrayDeniedPermission)
+                yourCustomDialogFirstStartRequest(startRequest, R.raw.dialog_location)
             }
             .setListenerShowDialogBeforeSecondRequest { arrayDeniedPermission, startRequest ->
-                printLog("button Location", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
+                printLog("Location", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
                 yourCustomDialogSecondStartRequest(startRequest)
             }
             .setListenerShowDialogAfterFinalDenied { arrayDeniedPermission, showSetting ->
-                printLog("button Location", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
+                printLog("Location", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
                 yourCustomDialogShowSetting(showSetting)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button Location", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("Location", "Result($isGranted)", arrayDeniedPermission)
+                showToast("Location", isGranted)
+            }
             .check()
     }
 
@@ -57,10 +64,13 @@ class MainActivity : AppCompatActivity() {
             .setPermissionWithTarget(Manifest.permission.READ_MEDIA_VIDEO, minSdk = Build.VERSION_CODES.TIRAMISU)
             .setPermissionWithTarget(Manifest.permission.READ_MEDIA_AUDIO, minSdk = Build.VERSION_CODES.TIRAMISU)
             .setListenerShowDialogBeforeRequest { arrayDeniedPermission, startRequest ->
-                printLog("button ReadStorage", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
-                yourCustomDialogFirstStartRequest(startRequest)
+                printLog("ReadStorage", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
+                yourCustomDialogFirstStartRequest(startRequest, R.raw.dialog_storage)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button ReadStorage", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("ReadStorage", "Result($isGranted)", arrayDeniedPermission)
+                showToast("ReadStorage", isGranted)
+            }
             .check()
     }
 
@@ -68,10 +78,13 @@ class MainActivity : AppCompatActivity() {
         PermissionManager.Builder(applicationContext)
             .setPermission(Manifest.permission.CAMERA)
             .setListenerShowDialogBeforeSecondRequest { arrayDeniedPermission, startRequest ->
-                printLog("button Camera", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
+                printLog("Camera", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
                 yourCustomDialogSecondStartRequest(startRequest)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button Camera", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("Camera", "Result($isGranted)", arrayDeniedPermission)
+                showToast("Camera", isGranted)
+            }
             .check()
     }
 
@@ -79,10 +92,13 @@ class MainActivity : AppCompatActivity() {
         PermissionManager.Builder(applicationContext)
             .setPermission(Manifest.permission.SYSTEM_ALERT_WINDOW)
             .setListenerShowDialogAfterFinalDenied { arrayDeniedPermission, showSetting ->
-                printLog("button Overlay", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
+                printLog("Overlay", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
                 yourCustomDialogShowSetting(showSetting)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button Overlay", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("Overlay", "Result($isGranted)", arrayDeniedPermission)
+                showToast("Overlay", isGranted)
+            }
             .check()
     }
 
@@ -90,14 +106,17 @@ class MainActivity : AppCompatActivity() {
         PermissionManager.Builder(applicationContext)
             .setPermission(Manifest.permission.RECORD_AUDIO)
             .setListenerShowDialogBeforeRequest { arrayDeniedPermission, startRequest ->
-                printLog("button RecordAudio", "ShowDialogBeforeRequest", arrayDeniedPermission)
-                yourCustomDialogFirstStartRequest(startRequest)
+                printLog("RecordAudio", "ShowDialogBeforeRequest", arrayDeniedPermission)
+                yourCustomDialogFirstStartRequest(startRequest, R.raw.dialog_record)
             }
             .setListenerShowDialogBeforeSecondRequest { arrayDeniedPermission, startRequest ->
-                printLog("button RecordAudio", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
+                printLog("RecordAudio", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
                 yourCustomDialogSecondStartRequest(startRequest)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button RecordAudio", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("RecordAudio", "Result($isGranted)", arrayDeniedPermission)
+                showToast("RecordAudio", isGranted)
+            }
             .check()
     }
 
@@ -107,53 +126,75 @@ class MainActivity : AppCompatActivity() {
             .setPermissionWithTarget(Manifest.permission.POST_NOTIFICATIONS, minSdk = Build.VERSION_CODES.TIRAMISU)
             .setPermission(Manifest.permission.READ_CONTACTS)
             .setListenerShowDialogBeforeSecondRequest { arrayDeniedPermission, startRequest ->
-                printLog("button PostNotificationsAndReadContacts", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
+                printLog("PostNotificationsAndReadContacts", "ShowDialogBeforeSecondRequest", arrayDeniedPermission)
                 yourCustomDialogSecondStartRequest(startRequest)
             }
             .setListenerShowDialogAfterFinalDenied { arrayDeniedPermission, showSetting ->
-                printLog("button PostNotificationsAndReadContacts", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
+                printLog("PostNotificationsAndReadContacts", "ShowDialogAfterFinalDenied", arrayDeniedPermission)
                 yourCustomDialogShowSetting(showSetting)
             }
-            .setListenerResult { arrayDeniedPermission, isGranted -> printLog("button PostNotificationsAndReadContacts", "Result($isGranted)", arrayDeniedPermission) }
+            .setListenerResult { arrayDeniedPermission, isGranted ->
+                printLog("PostNotificationsAndReadContacts", "Result($isGranted)", arrayDeniedPermission)
+                showToast("PostNotificationsAndReadContacts", isGranted)
+            }
             .check()
     }
 
-    private fun yourCustomDialogFirstStartRequest(startRequest: () -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle("First Permission Request")
-            .setMessage("This permission is needed to ...")
-            .setPositiveButton("Confirm", null)
-            .setOnDismissListener { startRequest() }
-            .show()
+    private fun yourCustomDialogFirstStartRequest(startRequest: () -> Unit, animation: Int) {
+        Dialog(this).apply {
+            val view = layoutInflater.inflate(R.layout.dialog_request_permission, null, false)
+            view.lottieAnimation.setAnimation(animation)
+            view.textViewTitle.text = "1. Permission Request"
+            view.textViewMessage.text = "This permission is needed to ..."
+            view.buttonConfirm.setOnClickListener { this.dismiss() }
+            setContentView(view)
+            setOnDismissListener { startRequest() }
+            show()
+        }
     }
 
     private fun yourCustomDialogSecondStartRequest(startRequest: () -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle("Second Permission Request")
-            .setMessage("This permission is needed to ...")
-            .setPositiveButton("Confirm", null)
-            .setOnDismissListener { startRequest() }
-            .show()
+        Dialog(this).apply {
+            val view = layoutInflater.inflate(R.layout.dialog_request_permission, null, false)
+            view.lottieAnimation.setAnimation(R.raw.dialog_request)
+            view.textViewTitle.text = "2. Permission Request"
+            view.textViewMessage.text = "This permission is needed to ..."
+            view.buttonConfirm.setOnClickListener { this.dismiss() }
+            setContentView(view)
+            setOnDismissListener { startRequest() }
+            show()
+        }
     }
 
     private fun yourCustomDialogShowSetting(showSetting: (Boolean) -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle("Show Setting")
-            .setMessage("Please turn on permission at setting ...")
-            .setPositiveButton("Setting") { _, _ -> showSetting(true) }
-            .setNegativeButton("Close") { _,_ -> showSetting(false) }
-            .setOnDismissListener { showSetting(false) }
-            .show()
+        Dialog(this).apply {
+            val view = layoutInflater.inflate(R.layout.dialog_request_permission_setting, null, false)
+            view.buttonSetting.setOnClickListener {
+                showSetting(true)
+                this.dismiss()
+            }
+            view.buttonClose.setOnClickListener {
+                showSetting(false)
+                this.dismiss()
+            }
+            setContentView(view)
+            setOnDismissListener { showSetting(false) }
+            show()
+        }
     }
 
-    private fun printLog(name: String, tag: String, denied: Array<String>) {
+    private fun printLog(permissionName: String, tag: String, denied: Array<String>) {
         Log.d(
             "PERMISSION MANAGER",
-            "---------------------------"+
-            "\n${name.uppercase()}" +
+            "---------------------------" +
+            "\n${permissionName.uppercase()}" +
             "\ntag = $tag" +
             "\ndenied = ${denied.toList()}" +
             "\n---------------------------"
         )
+    }
+
+    private fun showToast(permissionName: String, result: Boolean) {
+        Toast.makeText(this, "$permissionName isGranted = $result", Toast.LENGTH_SHORT).show()
     }
 }
