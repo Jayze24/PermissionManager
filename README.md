@@ -1,5 +1,8 @@
 # PermissionManager
 ### Easily check permission with your own dialog.
+
+https://user-images.githubusercontent.com/32419237/211525309-b5bda646-2b9b-4aae-b508-532ea9213f82.mp4
+
 ---------------------------
 ## Dependency
 Include the library in your `settings.gradle`
