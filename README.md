@@ -1,4 +1,8 @@
 # PermissionManager
+[![License](https://img.shields.io/badge/License-Apache_2.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+[![API](https://img.shields.io/badge/API-23%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=23)
+[![](https://jitpack.io/v/Jayze24/PermissionManager.svg)](https://jitpack.io/#Jayze24/PermissionManager)
+
 ### Easily check permission with your own dialog.
 
 https://user-images.githubusercontent.com/32419237/211525309-b5bda646-2b9b-4aae-b508-532ea9213f82.mp4
