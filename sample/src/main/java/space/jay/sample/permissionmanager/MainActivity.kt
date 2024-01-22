@@ -8,10 +8,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.dialog_request_permission.view.*
-import kotlinx.android.synthetic.main.dialog_request_permission_setting.view.*
 import space.jay.permissionmanager.PermissionManager
 import space.jay.sample.permissionmanager.databinding.ActivityMainBinding
+import space.jay.sample.permissionmanager.databinding.DialogRequestPermissionBinding
+import space.jay.sample.permissionmanager.databinding.DialogRequestPermissionSettingBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -142,12 +142,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun yourCustomDialogFirstStartRequest(startRequest: () -> Unit, animation: Int) {
         Dialog(this).apply {
-            val view = layoutInflater.inflate(R.layout.dialog_request_permission, null, false)
+            val view : DialogRequestPermissionBinding = DialogRequestPermissionBinding.inflate(layoutInflater, null, false)
             view.lottieAnimation.setAnimation(animation)
             view.textViewTitle.text = "1. Permission Request"
             view.textViewMessage.text = "This permission is needed to ..."
             view.buttonConfirm.setOnClickListener { this.dismiss() }
-            setContentView(view)
+            setContentView(view.root)
             setOnDismissListener { startRequest() }
             show()
         }
@@ -155,12 +155,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun yourCustomDialogSecondStartRequest(startRequest: () -> Unit) {
         Dialog(this).apply {
-            val view = layoutInflater.inflate(R.layout.dialog_request_permission, null, false)
+            val view : DialogRequestPermissionBinding = DialogRequestPermissionBinding.inflate(layoutInflater, null, false)
             view.lottieAnimation.setAnimation(R.raw.dialog_request)
             view.textViewTitle.text = "2. Permission Request"
             view.textViewMessage.text = "This permission is needed to ..."
             view.buttonConfirm.setOnClickListener { this.dismiss() }
-            setContentView(view)
+            setContentView(view.root)
             setOnDismissListener { startRequest() }
             show()
         }
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun yourCustomDialogShowSetting(showSetting: (Boolean) -> Unit) {
         Dialog(this).apply {
-            val view = layoutInflater.inflate(R.layout.dialog_request_permission_setting, null, false)
+            val view = DialogRequestPermissionSettingBinding.inflate(layoutInflater, null, false)
             view.buttonSetting.setOnClickListener {
                 showSetting(true)
                 this.dismiss()
@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                 showSetting(false)
                 this.dismiss()
             }
-            setContentView(view)
+            setContentView(view.root)
             setOnDismissListener { showSetting(false) }
             show()
         }
