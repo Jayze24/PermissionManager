@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import space.jay.permissionmanager.base.Constant
 
 internal class ReceiverPermissionResult(
@@ -31,7 +32,12 @@ internal class ReceiverPermissionResult(
     }
 
     fun register(): ReceiverPermissionResult {
-        contextApplication.registerReceiver(this, IntentFilter(id))
+        ContextCompat.registerReceiver(
+            contextApplication,
+            this,
+            IntentFilter(id),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
         return this
     }
 
