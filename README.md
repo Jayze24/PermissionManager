@@ -19,7 +19,7 @@ repositories {
 Include the library in your `build.gradle`
 ```kotlin
 dependencies {
-    implementation 'com.github.Jayze24:PermissionManager:0.0.1'
+    implementation 'com.github.Jayze24:PermissionManager:0.0.2'
 }
 ```
 ## Usage
