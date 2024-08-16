@@ -85,20 +85,6 @@ internal class ActivityRequestPermission : BaseActivity() {
 
     private fun sendResult() {
         val arrayDeniedPermission = UtilPermission.getArrayDeniedPermission(applicationContext, arrayDeniedPermission)
-        if (arrayDeniedPermission.isEmpty()) {
-            sendResult(arrayDeniedPermission)
-        } else {
-            sendDenied(arrayDeniedPermission)
-        }
-    }
-
-    private fun sendDenied(arrayDeniedPermission: Array<String>) {
-        val isDeniedFirstTime = arrayDeniedPermission.any { ActivityCompat.shouldShowRequestPermissionRationale(this, it) }
-        sendBroadcast(
-            Intent(receiverId)
-                .putExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION, arrayDeniedPermission)
-                .putExtra(Constant.Extra.RESULT_DENIED_IS_DENIED_FIRST_TIME, isDeniedFirstTime)
-        )
-        finish()
+        sendResult(arrayDeniedPermission)
     }
 }

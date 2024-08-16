@@ -16,17 +16,18 @@ internal class ReceiverPermissionResult(
     override fun onReceive(context: Context?, intent: Intent?) {
         intent?.also { i ->
             if (i.action == id) unregister() else return
-            when {
-                isFromActivityRequestPermission(i) ->
-                    requestAfterDenied(
-                        i.getStringArrayExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION) ?: emptyArray(),
-                        i.getBooleanExtra(Constant.Extra.RESULT_DENIED_IS_DENIED_FIRST_TIME, false)
-                    )
-                isFromActivityPackageSetting(i) ->
-                    sendResult(
-                        i.getStringArrayExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION) ?: emptyArray(),
-                        i.getBooleanExtra(Constant.Extra.RESULT_IS_GRANTED, false)
-                    )
+            if (isLastDecision(i)) {
+                // 마지막 결정까지 완료된 상태
+                sendResult(
+                    i.getStringArrayExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION) ?: emptyArray(),
+                    i.getBooleanExtra(Constant.Extra.RESULT_IS_GRANTED, false)
+                )
+            } else {
+                // 추가로 더 물어 봐야 하는 상태
+                requestAfterDenied(
+                    i.getStringArrayExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION) ?: emptyArray(),
+                    i.getBooleanExtra(Constant.Extra.RESULT_DENIED_IS_DENIED_FIRST_TIME, false)
+                )
             }
         }
     }
@@ -45,13 +46,10 @@ internal class ReceiverPermissionResult(
         contextApplication.unregisterReceiver(this)
     }
 
-    private fun isFromActivityRequestPermission(intent: Intent) =
-        intent.hasExtra(Constant.Extra.RESULT_DENIED_IS_DENIED_FIRST_TIME)
-        && intent.hasExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION)
-
-    private fun isFromActivityPackageSetting(intent: Intent) =
-        intent.hasExtra(Constant.Extra.RESULT_IS_GRANTED)
-        && intent.hasExtra(Constant.Extra.RESULT_DENIED_ARRAY_PERMISSION)
+    private fun isLastDecision(intent: Intent) : Boolean {
+        // RESULT_DENIED_IS_DENIED_FIRST_TIME 가 있으면 유저의 마지막 결정이 아님.
+        return !intent.hasExtra(Constant.Extra.RESULT_DENIED_IS_DENIED_FIRST_TIME)
+    }
 
     private fun sendResult(arrayDeniedPermission: Array<String>, isGranted: Boolean) {
         listenerPermission.result?.invoke(arrayDeniedPermission, isGranted)
@@ -67,9 +65,11 @@ internal class ReceiverPermissionResult(
 
     private fun requestAfterDenied(arrayDeniedPermission: Array<String>, isDeniedFirst: Boolean) {
         if (isShowDialogBeforeSecondRequest(isDeniedFirst)) {
+            // 두번째 권한 요청전 해야할 동작이 있으면 실행.
             listenerPermission.beforeSecondRequest!!.invoke(arrayDeniedPermission) {
-                // for call only one time. set beforeSecondRequest listener null.
+                // beforeSecondRequest listener 로부터 들어왔고 더이상 사용하지 않기 때문에 null 할당.
                 setListenerBeforeSecondRequestNull()
+                // 두번째 권한 요청 실행
                 requestPermission(arrayDeniedPermission)
             }
         } else {
